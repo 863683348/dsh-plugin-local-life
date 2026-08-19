@@ -1,7 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  amortize,
+  amortizeEqualPrincipal,
   budgetPlan,
+  summarizeLedger,
   discount,
   splitBill,
   tripChecklist,
@@ -68,4 +71,57 @@ test("tripChecklist returns scenario items", () => {
   const out = tripChecklist({ scenario: "airport" });
   assert.ok(out.includes("Boarding pass"));
   assert.ok(out.includes("- [ ]"));
+});
+
+
+test("summarizeLedger totals by category and month", () => {
+  const s = summarizeLedger({
+    entries: [
+      { date: "2026-08-01", category: "food", amount: 50 },
+      { date: "2026-08-02", category: "food", amount: 30 },
+      { date: "2026-08-03", category: "transport", amount: 20 },
+      { date: "2026-09-01", category: "food", amount: 100 },
+    ],
+  });
+  assert.equal(s.total, 200);
+  assert.equal(s.count, 4);
+  assert.equal(s.byCategory.food, 180);
+  assert.equal(s.byCategory.transport, 20);
+  assert.equal(s.byMonth["2026-08"], 100);
+  assert.equal(s.byMonth["2026-09"], 100);
+  assert.ok(s.text.includes("# Ledger summary"));
+});
+
+test("summarizeLedger rejects non-numeric amounts", () => {
+  assert.throws(() => summarizeLedger({ entries: [{ date: "x", category: "a", amount: "abc" }] }));
+});
+
+test("amortize equal-payment schedule math", () => {
+  const loan = amortize({ principal: 120000, annualRate: 6, years: 10 });
+  assert.equal(loan.schedule.length, 120);
+  assert.ok(loan.monthly > 1000 && loan.monthly < 1500, "monthly around 1332");
+  assert.ok(loan.totalInterest > 30000 && loan.totalInterest < 45000);
+  assert.ok(Math.abs(loan.schedule[119].balance) < 1, "final balance ~0");
+  const sumPrincipal = loan.schedule.reduce((s, x) => s + x.principal, 0);
+  assert.ok(Math.abs(sumPrincipal - 120000) < 5, "principal sums to ~120000");
+});
+
+test("amortize zero-rate loan", () => {
+  const loan = amortize({ principal: 12000, annualRate: 0, years: 1 });
+  assert.equal(loan.monthly, 1000);
+  assert.equal(loan.totalInterest, 0);
+});
+
+test("amortizeEqualPrincipal decreasing payments", () => {
+  const loan = amortizeEqualPrincipal({ principal: 12000, annualRate: 12, years: 1 });
+  assert.equal(loan.schedule.length, 12);
+  assert.equal(loan.monthlyPrincipal, 1000);
+  assert.ok(loan.schedule[0].payment > loan.schedule[11].payment, "payment decreases");
+  assert.ok(loan.totalInterest > 0);
+});
+
+test("loan functions reject bad input", () => {
+  assert.throws(() => amortize({ principal: 0, annualRate: 5, years: 1 }));
+  assert.throws(() => amortize({ principal: 1000, annualRate: 5, years: 0 }));
+  assert.throws(() => amortizeEqualPrincipal({ principal: -5, annualRate: 5, years: 1 }));
 });

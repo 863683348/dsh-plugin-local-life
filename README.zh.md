@@ -19,7 +19,9 @@ dsh plugin --profile <profile> add dsh-plugin-local-life
 | `price` | 单价换算（如每公斤 / 每 100 克多少钱） |
 | `discount` | 折扣计算：百分比折扣或满减（带门槛） |
 | `convert` | 单位换算 —— 重量（斤/公斤/磅）、长度（里/公里/尺/英里）、容量（升/加仑）、温度（°C/°F） |
-| `checklist` | 出行/外出清单（城市 / 机场 / 户外 / 自驾） |
+| `checklist` | 出行清单（city / airport / outdoor / self-drive） |
+| `ledger` | 记账流水汇总（分类/月度合计） |
+| `loan` | 贷款分期（等额本息/等额本金、月供与总利息）
 
 ## 配置
 

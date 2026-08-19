@@ -1,0 +1,10 @@
+# dsh-plugin-local-life — bundle patch layer.
+# Composes over an EMPTY entry list, so every patch here is an `insert`
+# appending composition rows. This row registers the `local_life` model tool
+# and the local-life prompt-guidance section host-wide.
+- insert:
+    - id: local-life
+      name: 'dsh-plugin-local-life'
+      config:
+        personaSection: true
+        sectionOrder: 6

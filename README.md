@@ -20,6 +20,8 @@ Restart DSH. The `local_life` tool is registered host-wide.
 | `discount` | Percent-off or amount-off (with threshold) math |
 | `convert` | Unit conversion — weight (斤/kg/磅), length (里/km/尺/英里), volume (L/加仑), temperature (°C/°F) |
 | `checklist` | Trip/outing checklist by scenario (city / airport / outdoor / self-drive) |
+| `ledger` | Expense-ledger summary — totals by category and month |
+| `loan` | Loan amortization — equal-payment or equal-principal schedules, monthly payment and total interest |
 
 ## Config
 
@@ -37,3 +39,8 @@ Pure logic (`lib/local.js`) has zero DSH/Cordis imports and is unit-tested in is
 ## License
 
 MIT
+
+
+## Roadmap
+
+See [ROADMAP.md](./ROADMAP.md) — next five versions (v0.2.0 – v0.6.0): ledger & loans, shopping compare & recipe cost, bills calendar & shared ledger, commute & insurance compare, annual report & daily briefing.
