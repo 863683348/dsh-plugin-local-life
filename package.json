@@ -1,7 +1,7 @@
 {
   "name": "dsh-plugin-local-life",
-  "version": "0.2.0",
-  "description": "Local-life toolkit for DeepSeek Harness agents: budget planning, bill splitting, unit-price and discount math, common unit conversions (incl. jin/li/chi, C/F), expense-ledger summaries, loan amortization (equal-payment / equal-principal), and trip checklists",
+  "version": "0.3.0",
+  "description": "Local-life toolkit for DeepSeek Harness agents: budgets, bill splitting, unit-price comparison with spec normalization, stacked discounts, unit conversions (jin/li/chi, C/F), expense-ledger summaries, loan amortization, recipe costing, and trip checklists",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -33,7 +33,10 @@
     "convert",
     "ledger",
     "amortization",
-    "loan"
+    "loan",
+    "shopping",
+    "recipe",
+    "discount"
   ],
   "license": "MIT",
   "dsh": {

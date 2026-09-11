@@ -2,6 +2,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   amortize,
+  compareUnitPrices,
+  recipeCost,
+  stackDiscounts,
   amortizeEqualPrincipal,
   budgetPlan,
   summarizeLedger,
@@ -124,4 +127,74 @@ test("loan functions reject bad input", () => {
   assert.throws(() => amortize({ principal: 0, annualRate: 5, years: 1 }));
   assert.throws(() => amortize({ principal: 1000, annualRate: 5, years: 0 }));
   assert.throws(() => amortizeEqualPrincipal({ principal: -5, annualRate: 5, years: 1 }));
+});
+
+
+test("compareUnitPrices normalizes specs and finds the best deal", () => {
+  const res = compareUnitPrices({
+    items: [
+      { name: "A", price: 12, quantity: 1, unit: "kg" },
+      { name: "B", price: 20, quantity: 2, unit: "kg" },
+      { name: "C", price: 8, quantity: 0.5, unit: "kg" },
+    ],
+    normalize: 1000,
+  });
+  assert.equal(res.best, "B", "20/2 = 10 per kg is cheapest");
+  assert.equal(res.worst, "C", "8/0.5 = 16 per kg is dearest");
+  assert.equal(res.rows[1].perNormalized, 10000);
+  assert.ok(res.savings > 0);
+  assert.ok(res.text.includes("# Unit price comparison"));
+});
+
+test("compareUnitPrices validates items", () => {
+  assert.throws(() => compareUnitPrices({ items: [] }));
+  assert.throws(() => compareUnitPrices({ items: [{ name: "x", price: 1, quantity: 0 }] }));
+  assert.throws(() => compareUnitPrices({ items: [{ name: "x", price: -1, quantity: 1 }] }));
+});
+
+test("stackDiscounts applies percentage then amount", () => {
+  const res = stackDiscounts({ price: 100, discounts: [{ pct: 10 }, { amount: 20 }] });
+  assert.equal(res.final, 70);
+  assert.equal(res.totalSaved, 30);
+  assert.equal(res.effectivePct, 30);
+  assert.equal(res.steps.length, 2);
+  assert.equal(res.steps[0].after, 90);
+});
+
+test("stackDiscounts honours thresholds and clamps at zero", () => {
+  const skipped = stackDiscounts({ price: 80, discounts: [{ threshold: 100, pct: 50 }] });
+  assert.equal(skipped.final, 80);
+  assert.equal(skipped.steps[0].applied, false);
+  assert.ok(skipped.steps[0].reason.includes("below threshold"));
+  const clamped = stackDiscounts({ price: 50, discounts: [{ amount: 80 }] });
+  assert.equal(clamped.final, 0);
+  assert.equal(clamped.totalSaved, 50);
+});
+
+test("stackDiscounts validates input", () => {
+  assert.throws(() => stackDiscounts({ price: 10, discounts: [] }));
+  assert.throws(() => stackDiscounts({ price: -1, discounts: [{ pct: 10 }] }));
+  assert.throws(() => stackDiscounts({ price: 10, discounts: [{ pct: 150 }] }));
+});
+
+test("recipeCost totals ingredients and divides by servings", () => {
+  const res = recipeCost({
+    name: "番茄炒蛋",
+    servings: 2,
+    ingredients: [
+      { name: "番茄", quantity: 3, unit: "个", unitPrice: 2 },
+      { name: "鸡蛋", quantity: 4, unit: "个", unitPrice: 1.5 },
+      { name: "油", quantity: 0.05, unit: "L", unitPrice: 20 },
+    ],
+  });
+  assert.equal(res.total, 13);
+  assert.equal(res.perServing, 6.5);
+  assert.equal(res.rows.length, 3);
+  assert.ok(res.text.includes("per serving: 6.5"));
+});
+
+test("recipeCost validates input", () => {
+  assert.throws(() => recipeCost({ ingredients: [] }));
+  assert.throws(() => recipeCost({ servings: 0, ingredients: [{ name: "x", quantity: 1, unitPrice: 1 }] }));
+  assert.throws(() => recipeCost({ ingredients: [{ name: "x", quantity: -1, unitPrice: 1 }] }));
 });

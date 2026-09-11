@@ -35,7 +35,7 @@
 - [ ] README（en/zh）更新
 - [ ] vertical-toolkits dump-config 正常
 
-## v0.3.0 — 比价与食谱
+## v0.3.0 ✅ 已完成 — 比价与食谱
 
 - `compare`：多商品单价对比（规格归一）、满减/折扣叠加计算
 - `recipe_cost`：食材清单 × 用量/单价 → 每份成本、采购合计

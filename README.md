@@ -22,6 +22,8 @@ Restart DSH. The `local_life` tool is registered host-wide.
 | `checklist` | Trip/outing checklist by scenario (city / airport / outdoor / self-drive) |
 | `ledger` | Expense-ledger summary — totals by category and month |
 | `loan` | Loan amortization — equal-payment or equal-principal schedules, monthly payment and total interest |
+| `compare` | Spec-normalized unit-price comparison and stacked discounts/thresholds |
+| `recipe_cost` | Recipe cost from ingredients — total and per-serving |
 
 ## Config
 
