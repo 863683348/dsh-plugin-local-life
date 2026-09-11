@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-local-life",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Local-life toolkit for DeepSeek Harness agents: budgets, bill splitting, unit-price comparison with spec normalization, stacked discounts, unit conversions (jin/li/chi, C/F), expense-ledger summaries, loan amortization, recipe costing, and trip checklists",
   "type": "module",
   "main": "lib/index.js",
